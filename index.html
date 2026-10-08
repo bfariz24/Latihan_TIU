@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Latihan TIU CPNS</title>
+  <link rel="stylesheet" href="src/ui/styles.css" />
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("tiu_theme");
+        if (t === "dark" || (!t && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <div class="app">
+    <header class="app-head">
+      <div class="logo">TIU</div>
+      <div class="head-text">
+        <h1>Latihan TIU</h1>
+        <p>Latihan soal-soal TIU</p>
+      </div>
+      <button class="theme-toggle" id="btn-theme" type="button" title="Ganti tema terang/gelap" aria-label="Ganti tema">🌙</button>
+    </header>
+
+    <!-- ===== BERANDA ===== -->
+    <section id="view-home">
+      <div class="card">
+        <h2>Mulai Latihan</h2>
+        <p class="sub">Pilih sumber soal, topik, level, dan jumlah soal.</p>
+
+        <div class="field">
+          <label for="f-sumber">Sumber soal</label>
+          <select id="f-sumber">
+            <option value="generator">Generator otomatis</option>
+            <option value="json">Bank soal (soal.json)</option>
+          </select>
+        </div>
+
+        <div class="field" id="wrap-topik">
+          <label for="f-topik">Topik</label>
+          <select id="f-topik"></select>
+        </div>
+
+        <div class="field" id="wrap-level">
+          <label for="f-level">Level kesulitan</label>
+          <select id="f-level">
+            <option value="1">1 — Dasar</option>
+            <option value="2" selected>2 — Menengah</option>
+            <option value="3">3 — Sulit</option>
+          </select>
+        </div>
+
+        <div class="field" id="wrap-jumlah">
+          <label for="f-jumlah">Jumlah soal</label>
+          <select id="f-jumlah">
+            <option>5</option>
+            <option selected>10</option>
+            <option>15</option>
+            <option>20</option>
+          </select>
+        </div>
+
+        <button class="btn" id="btn-mulai">Mulai Latihan</button>
+        <p class="hint" id="home-hint"></p>
+      </div>
+
+      <div class="card">
+        <h2>Riwayat Latihan</h2>
+        <p class="sub">Tersimpan di perangkat ini (localStorage).</p>
+        <div id="riwayat"></div>
+        <button class="linklike" id="btn-hapus-riwayat">Hapus riwayat</button>
+      </div>
+    </section>
+
+    <!-- ===== LATIHAN ===== -->
+    <section id="view-quiz" class="hidden">
+      <div class="card">
+        <div class="progress-wrap">
+          <div class="progress-top">
+            <span id="q-meta">Soal 1 / 10</span>
+            <span id="q-score">Benar: 0</span>
+          </div>
+          <div class="progress-bar"><i id="q-bar"></i></div>
+        </div>
+
+        <div><span class="chip" id="q-chip">Numerik</span></div>
+        <div class="q-text" id="q-text">Memuat soal…</div>
+
+        <div class="options" id="q-options"></div>
+
+        <div id="q-feedback" class="hidden"></div>
+
+        <div class="row" style="margin-top:16px">
+          <button class="btn ghost small hidden" id="btn-keluar">Keluar</button>
+          <button class="btn small hidden" id="btn-next">Soal Berikutnya</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== HASIL ===== -->
+    <section id="view-result" class="hidden">
+      <div class="card center">
+        <h2>Latihan Selesai</h2>
+        <p class="sub">Berikut ringkasan hasilmu.</p>
+        <div class="score-row">
+          <div class="score-box"><b id="r-benar">0</b><span>Benar</span></div>
+          <div class="score-box"><b id="r-salah">0</b><span>Salah</span></div>
+          <div class="score-box"><b id="r-skor">0</b><span>Skor (×5)</span></div>
+        </div>
+        <div class="row">
+          <button class="btn" id="btn-ulang">Ulangi</button>
+          <button class="btn ghost" id="btn-beranda">Ke Beranda</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="src/core/rng.js"></script>
+  <script src="src/core/question.js"></script>
+  <script src="src/generators/distractors.js"></script>
+  <script src="src/generators/validators.js"></script>
+  <script src="src/generators/deret_angka.js"></script>
+  <script src="src/generators/aritmetika_dasar.js"></script>
+  <script src="src/generators/persen.js"></script>
+  <script src="src/generators/pecahan_desimal.js"></script>
+  <script src="src/generators/perbandingan.js"></script>
+  <script src="src/generators/kecepatan_jarak_waktu.js"></script>
+  <script src="src/generators/usaha_pekerjaan.js"></script>
+  <script src="src/generators/usia.js"></script>
+  <script src="src/generators/index.js"></script>
+  <script src="src/core/adapter.js"></script>
+  <script src="data/soal.js"></script>
+  <script src="src/ui/app.js"></script>
+</body>
+</html>

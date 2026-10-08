@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <title>Tes Generator TIU</title>
+  <style>
+    body { font-family: system-ui, "Segoe UI", Arial, sans-serif; margin: 24px; color: #1f2430; }
+    h1 { font-size: 20px; }
+    button { padding: 10px 18px; font-size: 15px; cursor: pointer; border: 1px solid #334; border-radius: 8px; background: #2d6cdf; color: #fff; }
+    button:disabled { opacity: .6; cursor: default; }
+    .summary { margin: 16px 0; font-size: 15px; font-weight: 600; }
+    table { border-collapse: collapse; width: 100%; margin-top: 12px; }
+    th, td { border: 1px solid #d5d9e0; padding: 8px 10px; text-align: left; font-size: 14px; }
+    th { background: #f0f3f8; }
+    .ok { color: #157f3d; font-weight: 600; }
+    .bad { color: #c02626; font-weight: 600; }
+    pre { background: #f6f8fa; padding: 10px; border-radius: 8px; overflow: auto; font-size: 12.5px; border: 1px solid #e2e6ec; white-space: pre-wrap; }
+    details { margin-top: 14px; }
+    .cases { display: grid; gap: 10px; }
+    .case { border: 1px solid #e2e6ec; border-radius: 8px; padding: 10px 12px; background: #fafbfd; }
+  </style>
+</head>
+<body>
+  <h1>Tes Generator Soal TIU</h1>
+  <p>Klik tombol untuk menjalankan <b>1.000 soal</b> per topik per level dan validasi setiap soal (Bagian 5.3 &amp; 10).</p>
+  <button id="run">Jalankan Tes (1000 &times; topik &times; level)</button>
+  <div id="summary" class="summary"></div>
+  <div id="table"></div>
+  <div id="details" class="cases"></div>
+
+  <script src="../src/core/rng.js"></script>
+  <script src="../src/core/question.js"></script>
+  <script src="../src/generators/distractors.js"></script>
+  <script src="../src/generators/validators.js"></script>
+  <script src="../src/generators/deret_angka.js"></script>
+  <script src="../src/generators/aritmetika_dasar.js"></script>
+  <script src="../src/generators/persen.js"></script>
+  <script src="../src/generators/pecahan_desimal.js"></script>
+  <script src="../src/generators/perbandingan.js"></script>
+  <script src="../src/generators/kecepatan_jarak_waktu.js"></script>
+  <script src="../src/generators/usaha_pekerjaan.js"></script>
+  <script src="../src/generators/usia.js"></script>
+  <script src="../src/generators/index.js"></script>
+  <script src="./runner.js"></script>
+  <script>
+    var btn = document.getElementById("run");
+    btn.addEventListener("click", function () {
+      btn.disabled = true;
+      btn.textContent = "Menjalankan...";
+      setTimeout(function () {
+        var out = window.TIU_TEST_RUN();
+        render(out);
+        btn.disabled = false;
+        btn.textContent = "Jalankan Ulang Tes";
+      }, 30);
+    });
+
+    function render(out) {
+      var sum = document.getElementById("summary");
+      var allOk = out.totalFail === 0;
+      sum.innerHTML =
+        "Total soal diuji: <b>" + out.totalRun.toLocaleString("id-ID") + "</b> &nbsp;|&nbsp; " +
+        "Gagal validasi: <span class='" + (allOk ? "ok" : "bad") + "'>" + out.totalFail + "</span> &nbsp;|&nbsp; " +
+        (allOk ? "<span class='ok'>SEMUA LULUS ✔</span>" : "<span class='bad'>ADA KEGAGALAN �’</span>");
+
+      var html = "<table><tr><th>Topik</th><th>Level</th><th>Diuji</th><th>Gagal</th><th>Status</th></tr>";
+      out.results.forEach(function (r) {
+        html +=
+          "<tr><td>" + r.topic + "</td><td>" + r.level + "</td><td>" + r.run +
+          "</td><td>" + r.fail + "</td><td class='" + (r.fail === 0 ? "ok" : "bad") + "'>" +
+          (r.fail === 0 ? "LULUS" : "GAGAL") + "</td></tr>";
+      });
+      html += "</table>";
+      document.getElementById("table").innerHTML = html;
+
+      var det = "";
+      out.results.forEach(function (r) {
+        if (!r.sample) return;
+        var s = r.sample;
+        var opts = "";
+        ["A", "B", "C", "D", "E"].forEach(function (k) {
+          var mark = k === s.correct ? " ✔" : "";
+          opts += k + ". " + s.options[k] + mark + "<br>";
+        });
+        det +=
+          "<details class='case'><summary><b>" + r.topic + "</b> — level " + r.level + " (contoh soal)</summary>" +
+          "<p style='white-space:pre-wrap'>" + s.text + "</p>" +
+          "<div>" + opts + "</div>" +
+          "<p><b>Pembahasan:</b></p><pre>" + s.explanation_steps.join("\n") + "</pre>" +
+          "<p><i>Tips:</i> " + (s.shortcut_tip || "-") + "</p></details>";
+
+        if (r.firstErrors.length) {
+          det += "<details class='case' open><summary class='bad'>Kegagalan pada " + r.topic + " level " + r.level + "</summary><pre>" +
+            JSON.stringify(r.firstErrors, null, 2) + "</pre></details>";
+        }
+      });
+      document.getElementById("details").innerHTML = det;
+    }
+  </script>
+</body>
+</html>
